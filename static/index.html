@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <ul id="stock-list"></ul>
+
+    <script type="text/javascript">
+        var socket = io.connect('http://127.0.0.1:5000');
+
+        socket.on('stock_price_updates', function(data) {
+            let stockList = document.getElementById('stock-list');
+            stockList.innerHTML = "";  // Clear previous data
+            data.forEach(stock => {
+                let listItem = document.createElement('li');
+                listItem.textContent = `${stock.name} (${stock.ticker}): $${stock.price.toFixed(2)}`;
+                stockList.appendChild(listItem);
+            });
+        });
+
+        // Request updates every 2 seconds
+        setInterval(() => {
+            socket.emit('request_stock_updates');
+        }, 2000);
+    </script>
+</body>
+</html>
+
